@@ -1,4 +1,5 @@
 import time
+import atexit
 from client import AvatarClient
 from models import ContainerStatus, Command
 
@@ -9,14 +10,21 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 client = AvatarClient("https://localhost:7241/api/v1")
 uuid = None
 
+def exit_handler():
+    global uuid, client
+    if uuid and client:
+        client.dispose_avatar(uuid)
+        print(f"Avatar disposed (ID: {uuid})")
+        uuid = None
+
+atexit.register(exit_handler)
+
 def main():
     global uuid, client
-    uuid = client.initialize_avatar("Python test client", "")
-    print(f"Avatar created (ID: {uuid})")
-
     active_container_id = ""
     next_command_index = 0
-    print("Awaiting commands")
+    uuid = client.initialize_avatar("Python test client", "")
+    print(f"Avatar created (ID: {uuid})\nAwaiting commands...")
     try:
         while True:
             time.sleep(1)
@@ -46,12 +54,11 @@ def main():
                     client.update_container_status(uuid, container.id, ContainerStatus.SUCCESS)
             except:
                 client.update_container_status(uuid, container.id, ContainerStatus.ERROR)
-            
     except Exception as ex:
         print(ex)
         client.dispose_avatar(uuid)
-        uuid = None
         print(f"Avatar disposed (ID: {uuid})")
+        uuid = None
 
 def handle_command(command: Command):
     time.sleep(1)
@@ -59,8 +66,3 @@ def handle_command(command: Command):
 
 if __name__ == "__main__":
     main()
-
-def __exit__(self, exc_type, exc_value, traceback):
-    global uuid, client
-    if uuid and client:
-        client.dispose_avatar(uuid)

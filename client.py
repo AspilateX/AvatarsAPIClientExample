@@ -35,7 +35,7 @@ class AvatarClient:
         if response.status_code != 200:
             return None
 
-        container = CommandsContainer.model_validate_json(response.json())
+        container = CommandsContainer.model_validate(response.json())
         return container
     
     def update_container_status(self, uuid: str, container_id: str, status: ContainerStatus):
