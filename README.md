@@ -1,1 +1,1 @@
-A simple example of an avatar client Atlant AI Avatars API
+A simple example of an avatar client for Atlant AI Avatars API
