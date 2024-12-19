@@ -38,8 +38,15 @@ def main():
             active_container_id = container.id
 
             # Начинаем от текущей команды пока не выполним все новые команды
-            for i in range(next_command_index, len(container.commands)):
-                handle_command(container.commands[i])
+            try:
+                for i in range(next_command_index, len(container.commands)):
+                    handle_command(container.commands[i])
+                
+                if container.is_completed:
+                    client.update_container_status(uuid, container.id, ContainerStatus.SUCCESS)
+            except:
+                client.update_container_status(uuid, container.id, ContainerStatus.ERROR)
+            
     except Exception as ex:
         print(ex)
         client.dispose_avatar(uuid)
