@@ -7,7 +7,7 @@ from models import ContainerStatus, Command
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-client = AvatarClient("https://localhost:7241/api/v1")
+client = AvatarClient("https://avatar-backend.atlantai.app/api/v1")
 uuid = None
 
 def exit_handler():
@@ -49,7 +49,8 @@ def main():
             try:
                 for i in range(next_command_index, len(container.commands)):
                     handle_command(container.commands[i])
-                
+                    next_command_index = i + 1
+
                 if container.is_completed:
                     client.update_container_status(uuid, container.id, ContainerStatus.SUCCESS)
             except:
@@ -66,3 +67,4 @@ def handle_command(command: Command):
 
 if __name__ == "__main__":
     main()
+    
